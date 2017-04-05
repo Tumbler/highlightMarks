@@ -2,7 +2,7 @@
 " Highlight Marks plugin
 " Author: Tumbler Terrall [TumblerTerrall@gmail.com]
 " Last Edited: 04/04/2017 06:26 PM
-let s:Version = 1.00
+let s:Version = 1.01
 
 " Anti-inclusion guard and version
 if (exists("g:loaded_highlightMarks") && (g:loaded_baseConverter >= s:Version))
@@ -95,8 +95,10 @@ function! s:RemoveHighlighting(...)
    else
       " No arguments, delete all
       for mark in values(s:highlights)
-         call matchdelete(mark[1])
-         call remove(mark, 1)
+         if (len(mark) > 1)
+            call matchdelete(mark[1])
+            call remove(mark, 1)
+         endif
       endfor
    endif
 endfunction
