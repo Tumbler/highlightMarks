@@ -1,7 +1,7 @@
 " @Tracked
 " Highlight Marks plugin
 " Author: Tumbler Terrall [TumblerTerrall@gmail.com]
-" Last Edited: 04/04/2017 06:26 PM
+" Last Edited: 04/05/2017 11:34 AM
 let s:Version = 1.01
 
 " Anti-inclusion guard and version
