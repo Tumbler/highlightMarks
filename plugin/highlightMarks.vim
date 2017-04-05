@@ -1,8 +1,8 @@
 " @Tracked
 " Highlight Marks plugin
 " Author: Tumbler Terrall [TumblerTerrall@gmail.com]
-" Last Edited: 04/05/2017 11:43 AM
-let s:Version = 1.03
+" Last Edited: 04/05/2017 01:10 PM
+let s:Version = 1.04
 
 " Anti-inclusion guard and version
 if (exists("g:loaded_highlightMarks") && (g:loaded_highlightMarks >= s:Version))
@@ -20,11 +20,18 @@ if (!exists('g:highlightMarks_cterm_colors'))
    " Used for cterm colors. Takes a list of numbers.
    let g:highlightMarks_cterm_colors = [3, 2, 4, 1]
 endif
+if (!exists('g:highlightMarks_useSigns'))
+   " Define this variable as true if you want to highlight line to the end of
+   " the screen. Note that this isn't quite as reliable as the other method
+   " and brings up an (IMO) ugly column on the left.
+   let g:highlightMarks_useSigns = 0
+endif
 
 " [script]Global variables
 let s:highlights = {}
 let s:index = 0
 let s:cterm_index = 0
+let s:nextID = 1
 
 " Commands
 command! -nargs=* RemoveMarkHighlights call <SID>RemoveHighlighting(<f-args>)
@@ -55,17 +62,20 @@ endfunction
 "     returns - void
 function! s:HighlightMark(mark)
    " Need to be able to differentiate capitals from lowercases.
-   let name = 'highlightMarks_'. ((a:mark =~ '\u') ? a:mark : 'C'.a:mark)
+   let name = 'highlightMarks_'. ((a:mark =~ '\u') ? 'C'. a:mark :a:mark)
    if (has_key(s:highlights, a:mark) && len(s:highlights[a:mark]) == 2)
       " If mark has been defined before, remove the reference to the highlight,
       " but leave the color intact
-      call matchdelete(s:highlights[a:mark][1])
+      call <SID>MatchDelete(s:highlights[a:mark][1])
       call remove(s:highlights[a:mark], 1)
    elseif (has_key(s:highlights, a:mark))
       " Mark has been defined but removed
       let color = s:highlights[a:mark][0][0]
       let cterm_color = s:highlights[a:mark][0][1]
       exe "highlight ". name ." ctermbg=". cterm_color ." guibg=". color
+      if (g:highlightMarks_useSigns)
+         exe "sign define ". name ." linehl=". name
+      endif
    else
       " Not previously defined
       let color = g:highlightMarks_colors[s:index]
@@ -73,9 +83,18 @@ function! s:HighlightMark(mark)
       let s:index = (s:index + 1) % len(g:highlightMarks_colors)
       let s:cterm_index = (s:cterm_index + 1) % len(g:highlightMarks_cterm_colors)
       exe "highlight ". name ." ctermbg=". cterm_color ." guibg=". color
+      if (g:highlightMarks_useSigns)
+         exe "sign define ". name ." linehl=". name
+      endif
       let s:highlights[a:mark] = [[color, cterm_color]]
    endif
-   call add(s:highlights[a:mark], matchadd(name, ".*\\%'".a:mark.'.*', 0))
+   if (g:highlightMarks_useSigns)
+      let ID = <SID>GetNextID()
+      exe "sign place ". ID ." line=". line('.') ." name=". name ." file=". expand('%:p')
+      call add(s:highlights[a:mark], ID)
+   else
+      call add(s:highlights[a:mark], matchadd(name, ".*\\%'".a:mark.'.*', 0))
+   endif
 endfunction
 
 " RemoveHighlighting ><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -88,7 +107,7 @@ function! s:RemoveHighlighting(...)
       " Only delete highlighting for specified marks
       for mark in a:000
          if (has_key(s:highlights, mark) && len(s:highlights[mark]) > 1)
-            call matchdelete(s:highlights[mark][1])
+            call <SID>MatchDelete(s:highlights[mark][1])
             call remove(s:highlights[mark], 1)
          endif
       endfor
@@ -96,11 +115,33 @@ function! s:RemoveHighlighting(...)
       " No arguments, delete all
       for mark in values(s:highlights)
          if (len(mark) > 1)
-            call matchdelete(mark[1])
+            call <SID>MatchDelete(mark[1])
             call remove(mark, 1)
          endif
       endfor
    endif
+endfunction
+
+" MatchDelete <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+"   brief: Deletes a highlight match, but takes into account weather signs
+"          are being used or not.
+"     input   - ID: [int] The ID of the match to delete
+"     returns - void
+function! s:MatchDelete(ID)
+   if (g:highlightMarks_useSigns)
+      exe "sign unplace ". a:ID
+   else
+      call matchdelete(a:ID)
+   endif
+endfunction
+
+" GetNextID <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+"   brief: Finds the next unique ID and returns it
+"     returns - The next unique ID
+function! s:GetNextID()
+   let retVal = s:nextID
+   let s:nextID += 1
+   return retVal
 endfunction
 
 " The MIT License (MIT)
