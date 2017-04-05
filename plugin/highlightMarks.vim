@@ -1,8 +1,8 @@
 " @Tracked
 " Highlight Marks plugin
 " Author: Tumbler Terrall [TumblerTerrall@gmail.com]
-" Last Edited: 04/05/2017 11:34 AM
-let s:Version = 1.01
+" Last Edited: 04/05/2017 11:43 AM
+let s:Version = 1.02
 
 " Anti-inclusion guard and version
 if (exists("g:loaded_highlightMarks") && (g:loaded_baseConverter >= s:Version))
@@ -87,7 +87,7 @@ function! s:RemoveHighlighting(...)
    if (a:0)
       " Only delete highlighting for specified marks
       for mark in a:000
-         if (has_key(s:highlights, mark))
+         if (has_key(s:highlights, mark) && len(s:highlights[mark]) > 1)
             call matchdelete(s:highlights[mark][1])
             call remove(s:highlights[mark], 1)
          endif
