@@ -14,6 +14,7 @@ Pros:
 Cons:
  - Has the possibility to get "de-synced" with marks
  - Creates an ugly column to the left of your code
+ 
 To use signs define `g:highlightMarks_useSigns` as 1.
 
 There is also a command to get rid of the highlighting if starts annoying you: `:RemoveMarkHighlights`. With no arguments it will clear all mark highlighting. If you give a list of characters, it will clear the highlighting for the specified marks only.
