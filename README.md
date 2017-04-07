@@ -1,4 +1,4 @@
-[![This project is considered experimental](https://img.shields.io/badge/Status-experimental-red.svg)](https://arp242.net/status/experimental)
+[![This project is considered finished](https://img.shields.io/badge/Status-finished-green.svg)](https://arp242.net/status/finished)
 # Highlight Marks
 A vim plugin that highlights marks with different colors so you know where they are.
 
