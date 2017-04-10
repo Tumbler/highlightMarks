@@ -2,7 +2,7 @@
 " Highlight Marks plugin
 " Author: Tumbler Terrall [TumblerTerrall@gmail.com]
 " Last Edited: 04/05/2017 01:10 PM
-let s:Version = 1.04
+let s:Version = 1.05
 
 " Anti-inclusion guard and version
 if (exists("g:loaded_highlightMarks") && (g:loaded_highlightMarks >= s:Version))
