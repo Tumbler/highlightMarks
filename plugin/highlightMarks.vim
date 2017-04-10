@@ -37,13 +37,13 @@ let s:nextID = 1
 command! -nargs=* RemoveMarkHighlights call <SID>RemoveHighlighting(<f-args>)
 
 " Take control of adding marks
-let c='A'
-while c <= 'z'
-   if (c =~ '\a')
+let s:c='A'
+while s:c <= 'z'
+   if (s:c =~ '\a')
       " Only remap them if they're alphabetical
-      exec 'nnoremap <silent>m'.c.' :call <SID>AddMark("'.c.'")<CR>'
+      exec 'nnoremap <silent>m'.s:c.' :call <SID>AddMark("'.s:c.'")<CR>'
    endif
-   let c = nr2char(1+char2nr(c))
+   let s:c = nr2char(1+char2nr(s:c))
 endwhile
 
 " AddMark <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
